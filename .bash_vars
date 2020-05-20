@@ -1,0 +1,7 @@
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:~/go/bin
+export PATH=$PATH:~/.local/bin
+
+export PATH=$PATH:~/Repos/github.com/dkujawski/my-git-helpers
+export REPOPATHS=~/Repos/github.com/:~/Repos/foxrepo.praecipio.com/
+

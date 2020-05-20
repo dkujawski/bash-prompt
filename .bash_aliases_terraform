@@ -1,0 +1,84 @@
+
+alias tfi="terraform init -upgrade"
+alias tfp="terraform plan -var tf_mode=apply -out /tmp/${AWS_OKTA_PROFILE}_${GIT_BRANCH}_$(date +%s).plan"
+
+alias t12ip="terraform12 init -upgrade && terraform12 plan -out /tmp/dkujawski_${GIT_BRANCH}_$(date +%s).plan"
+
+function _tfip_exec {
+    profile="${1}"
+    plan="/tmp/${profile}_${GIT_BRANCH}_$(date +%s).plan"
+    aws-okta exec "${profile}" -- terraform init -upgrade \
+    && aws-okta exec "${profile}" -- terraform plan -var tf_mode=apply -out "${plan}" \
+    && export TERRAFORM_PLAN="${plan}" \
+    && echo "TERRAFORM_PLAN=${plan}"
+}
+
+function _tfip {
+    profile="${1}"
+    if [ -z ${AWS_DEFAULT_REGION+x} ]; then
+        echo "AWS_DEFAULT_REGION not set!"
+    elif [ -z ${1+x} ]; then
+        if [ -z ${AWS_OKTA_PROFILE+x} ]; then 
+            echo "AWS_OKTA_PROFILE not set!"
+            echo "Usage: tfip aws-profile-name file.plan"
+        else
+            profile="${AWS_OKTA_PROFILE}"
+            _tfip_exec "${profile}"
+        fi
+    else
+        _tfip_exec "${profile}"
+    fi
+}
+alias tfip=_tfip
+
+function _tfa_exec {
+    profile="${1}"
+    plan="${2}"
+    if [ -e "${plan}" ]; then
+        echo "aws-okta exec \"${profile}\" -- terraform apply \"${plan}\""
+        aws-okta exec "${profile}" -- terraform apply "${plan}"
+    else
+        echo "plan not found: ${plan}"
+    fi
+}
+
+function _tfa {
+    profile="${1}"
+    plan="${2}"
+    if [ -z ${AWS_DEFAULT_REGION+x} ]; then
+        echo "AWS_DEFAULT_REGION not set!"
+        return
+    fi
+    if [ -z ${1+x} ]; then
+        if [ -z ${AWS_OKTA_PROFILE+x} ]; then 
+            echo "Usage: tfa aws-profile-name file.plan"
+            return
+        else
+            profile="${AWS_OKTA_PROFILE}"
+        fi
+    fi
+    if [ -z ${2+x} ]; then
+        if [ -z ${TERRAFORM_PLAN+x} ]; then
+            echo "Usage: tfa aws-profile-name file.plan"
+            return
+        else
+            plan="${TERRAFORM_PLAN}"
+            export TERRAFORM_PLAN=""
+        fi
+    fi
+    _tfa_exec "${profile}" "${plan}"
+    found_plans=( $(find "/tmp/" -name "${profile}_${GIT_BRANCH}_*.plan" -type f -mtime +14 -print0 2>/dev/null) )
+    if [ ${#found_plans[@]} -gt 0 ]; then 
+       echo "found old plans"
+       echo "${#found_plans[@]}"
+       read -p "Delete old plans? y/N" -n 1 -r
+       echo 
+       if [[ $REPLY =~ ^[Yy]$ ]]; then
+           for p in ${found_plans[@]}; do 
+               rm -f "$p"
+           done
+       fi
+    fi
+}
+alias tfa=_tfa
+
