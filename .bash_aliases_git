@@ -1,0 +1,23 @@
+alias .dkujawski='cd ~/Repos/github.com/dkujawski'
+
+function _gitpushorigin {
+    if [ -z "$GIT_BRANCH"  ]; then
+        echo "no branch?"
+    else
+        git push -u origin "${GIT_BRANCH}"
+    fi
+}
+
+alias gpo=_gitpushorigin
+
+function _mkgitclone {
+    if [ -z ${1+x} ] 
+    then
+        echo "usage: ${0} repo_address"
+        return
+    fi
+    repodir=$(echo "${1%%/*}" | cut -d@ -f2 | sed 's/:/\//; s/^/\/home\/dave\/Repos\//')
+    mkdir -p "${repodir}" && cd "${repodir}" && git clone "${1}"
+}
+alias mkgc=_mkgitclone
+
