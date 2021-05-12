@@ -7,14 +7,27 @@ alias t12ip="terraform12 init -upgrade && terraform12 plan -out /tmp/dkujawski_$
 function _tfip_exec {
     profile="${1}"
     plan="/tmp/${profile}_${GIT_BRANCH}_$(date +%s).plan"
-    aws-okta exec "${profile}" -- terraform init -upgrade \
-    && aws-okta exec "${profile}" -- terraform plan -var tf_mode=apply -out "${plan}" \
-    && export TERRAFORM_PLAN="${plan}" \
-    && echo "TERRAFORM_PLAN=${plan}"
+    mkdir -p $(dirname ${plan})
+    echo "aws-okta exec \"${profile}\" -- terraform init -upgrade" \
+    && aws-okta exec "${profile}" -- terraform init -upgrade \
+    && echo "aws-okta exec \"${profile}\" -- terraform plan -var tf_mode=apply -out \"${plan}\" ${TFIP_ARGS}" \
+    && aws-okta exec "${profile}" -- terraform plan -var tf_mode=apply -out "${plan}" ${TFIP_ARGS} \
+    && echo "TERRAFORM_PLAN=${plan}" \
+    && export TERRAFORM_PLAN="${plan}"
 }
 
 function _tfip {
     profile="${1}"
+    repo=$(basename $(pwd))
+    if [ ${repo%%.*} = "tfs" ]; then
+        # extract env info from current path
+        context=${repo#*.}
+        AWS_OKTA_PROFILE=${context%.*}
+        AWS_DEFAULT_REGION=${context#*.}
+        if [ -z ${profile+x} ]; then 
+            profile="${AWS_OKTA_PROFILE}"
+        fi
+    fi
     if [ -z ${AWS_DEFAULT_REGION+x} ]; then
         echo "AWS_DEFAULT_REGION not set!"
     elif [ -z ${1+x} ]; then
@@ -45,6 +58,16 @@ function _tfa_exec {
 function _tfa {
     profile="${1}"
     plan="${2}"
+    repo=$(basename $(pwd))
+    if [ ${repo%%.*} = "tfs" ]; then
+        # extract env info from current path
+        context=${repo#*.}
+        AWS_OKTA_PROFILE=${context%.*}
+        AWS_DEFAULT_REGION=${context#*.}
+        if [ -z ${profile+x} ]; then 
+            profile="${AWS_OKTA_PROFILE}"
+        fi
+    fi
     if [ -z ${AWS_DEFAULT_REGION+x} ]; then
         echo "AWS_DEFAULT_REGION not set!"
         return
@@ -67,9 +90,12 @@ function _tfa {
         fi
     fi
     _tfa_exec "${profile}" "${plan}"
-    found_plans=( $(find "/tmp/" -name "${profile}_${GIT_BRANCH}_*.plan" -type f -mtime +14 -print0 2>/dev/null) )
+    found_plans=( $(find "/tmp/" -name "${profile}_${GIT_BRANCH}_*.plan" -type f -mtime +14 -print 2>/dev/null) )
     if [ ${#found_plans[@]} -gt 0 ]; then 
        echo "found old plans"
+       for p in ${found_plans[@]}; do 
+           echo "$p"
+       done
        echo "${#found_plans[@]}"
        read -p "Delete old plans? y/N" -n 1 -r
        echo 
