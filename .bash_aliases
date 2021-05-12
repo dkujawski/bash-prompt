@@ -28,20 +28,21 @@ alias ll='ls -lathr'
 alias la='ls -A'
 alias l='ls -CF'
 
-# Git
-function _gitpushorigin {
-    if [ -z "$GIT_BRANCH"  ]; then
-        echo "no branch?"
-    else
-        git push -u origin "${GIT_BRANCH}"
+# mkdir and cd into it
+function _mkcd {
+    if [ -z ${1+x} ]
+    then
+        echo "usage: ${0} new_dir_name"
+        return
     fi
+    mkdir -p "${1}" && cd "${1}"
 }
-
-alias gpo=_gitpushorigin
+alias mkcd=_mkcd
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
 
 if [ -f ~/.bash_aliases_aws-okta ]; then
     . ~/.bash_aliases_aws-okta
@@ -49,5 +50,13 @@ fi
 
 if [ -f ~/.bash_aliases_terraform ]; then
     . ~/.bash_aliases_terraform
+fi
+
+if [ -f ~/.bash_aliases_fox ]; then
+    . ~/.bash_aliases_fox
+fi
+
+if [ -f ~/.bash_aliases_git ]; then
+    . ~/.bash_aliases_git
 fi
 
