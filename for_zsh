@@ -1,0 +1,24 @@
+THISDIR="${0:A:h}"
+
+echo "sourcing custom configs from $THISDIR"
+
+if [ -f $THISDIR/.bash_aliases_aws-okta ]; then
+    echo "sourcing aws-okta aliases"
+    . $THISDIR/.bash_aliases_aws-okta
+fi
+
+if [ -f $THISDIR/.bash_aliases_terraform ]; then
+    echo "sourcing terraform aliases"
+    . $THISDIR/.bash_aliases_terraform
+fi
+
+if [ -f $THISDIR/.bash_aliases_fox ]; then
+    echo "sourcing fox aliases"
+    . $THISDIR/.bash_aliases_fox
+fi
+
+if [ -f $THISDIR/.bash_aliases_git ]; then
+    echo "sourcing git aliases"
+    . $THISDIR/.bash_aliases_git
+fi
+

@@ -108,3 +108,22 @@ function _tfa {
 }
 alias tfa=_tfa
 
+function _acc_on {
+    # dkdev-sandbox
+    export AWS_ALTERNATE_ACCESS_KEY_ID=AKIAUADHMNT2DMZHJFCA
+    export AWS_ALTERNATE_SECRET_ACCESS_KEY=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
+    # dkdev-sandbox2
+    export AWS_ACCESS_KEY_ID=AKIA5P3RCBSOQ7M7SCRP
+    export AWS_SECRET_ACCESS_KEY=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
+}
+alias acc_on=_acc_on
+
+function _acc_off {
+    # unset AWS_PROFILE
+    unset AWS_ACCESS_KEY_ID
+    unset AWS_SECRET_ACCESS_KEY
+    # unset AWS_ALTERNATE_PROFILE
+    unset AWS_ALTERNATE_ACCESS_KEY_ID
+    unset AWS_ALTERNATE_SECRET_ACCESS_KEY
+}
+alias acc_off=_acc_off

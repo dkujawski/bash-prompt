@@ -1,8 +1,11 @@
-alias .dkujawski='cd ~/Repos/github.com/dkujawski'
+#!/bin/bash
+
+alias .dkujawski='cd ~/Repo/github.com/dkujawski'
 
 function _gitpushorigin {
-    if [ -z "$GIT_BRANCH"  ]; then
-        echo "no branch?"
+    GIT_BRANCH=$(git branch --show-current)
+    if [[ $GIT_BRANCH == "master" ]] || [[ $GIT_BRANCH == "main" ]]; then
+        echo "no push to ${GIT_BRANCH}!"
     else
         git push -u origin "${GIT_BRANCH}"
     fi
