@@ -1,0 +1,27 @@
+
+HERE=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+echo "custom env from $HERE"
+
+export REPOS=~/Repo
+export GIT_REPOS=$REPOS/github.com
+export MY_SCRATCH_DIR=~/Documents/scratch
+
+export PATH=/usr/local/bin:$PATH
+export PATH=$PATH:~/go/bin
+export PATH=/usr/local/share/python/:$PATH
+export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+export PATH=$PATH:${HERE}/bin
+export PATH=$PATH:$FOX_REPOS/utilities-scripts
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+[ -f ${HERE}/.bash_aliases ] && source ${HERE}/.bash_aliases 
+[ -f ${HERE}/.bash_aliases_aws-okta ] && source ${HERE}/.bash_aliases_aws-okta
+[ -f ${HERE}/.bash_aliases_git ] && source ${HERE}/.bash_aliases_git
+[ -f ${HERE}/.bash_aliases_terraform ] && source ${HERE}/.bash_aliases_terraform
+[ -f ${HERE}/.bash_scratch_space ] && source ${HERE}/.bash_scratch_space 
+
+fzf=junegunn/fzf/shell/completion.bash
+[ -f ${GIT_REPOS}/${fzf} ] && source ${GIT_REPOS}/${fzf}
+

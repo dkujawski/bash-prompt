@@ -44,19 +44,11 @@ alias mkcd=_mkcd
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 
-if [ -f ~/.bash_aliases_aws-okta ]; then
-    . ~/.bash_aliases_aws-okta
-fi
-
-if [ -f ~/.bash_aliases_terraform ]; then
-    . ~/.bash_aliases_terraform
-fi
-
-if [ -f ~/.bash_aliases_fox ]; then
-    . ~/.bash_aliases_fox
-fi
-
-if [ -f ~/.bash_aliases_git ]; then
-    . ~/.bash_aliases_git
-fi
+function _verup {
+    repo=$(git remote -v | awk '{print $2; exit}')
+    curr=$(git -c 'versionsort.suffix=-' ls-remote --exit-code --sort='version:refname' --tags ${repo} '*.*.*' | tail -n1 | cut -d'/' -f3)
+    next=$(eval $(echo ${curr} | sed -n -r 's/([0-9]+\.[0-9]+)\.([0-9]+)/echo "\1.$((\2+1))"/p'))
+    sed -i '' -r "s/VERSION=[0-9]+\.[0-9]+\.[0-9]+/VERSION=${next}/" Makefile
+}
+alias versionup=_verup
 

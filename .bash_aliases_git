@@ -1,13 +1,13 @@
 #!/bin/bash
 
-alias .dkujawski='cd ~/Repo/github.com/dkujawski'
+alias .dkujawski="cd ${GIT_REPOS}/dkujawski"
 
 function _gitpushorigin {
     GIT_BRANCH=$(git branch --show-current)
     if [[ $GIT_BRANCH == "master" ]] || [[ $GIT_BRANCH == "main" ]]; then
         echo "no push to ${GIT_BRANCH}!"
     else
-        git push -u origin "${GIT_BRANCH}"
+        git push --force origin "${GIT_BRANCH}"
     fi
 }
 
